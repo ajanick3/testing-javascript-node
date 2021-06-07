@@ -1,0 +1,27 @@
+{
+  "compilerOptions": {
+    "baseUrl": "./",
+    "module": "esnext",
+    "target": "es5",
+    "moduleResolution": "node",
+    "allowSyntheticDefaultImports": true,
+    "paths": {
+      "*": [
+        "test/*",
+        "src/*"
+      ]
+    },
+    "rootDirs": [
+      "src",
+      "test"
+    ],
+    "types": [
+      "node",
+      "jest"
+    ],
+  },
+  "include": [
+    "src",
+    "test"
+  ]
+}
