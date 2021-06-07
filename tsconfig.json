@@ -17,8 +17,10 @@
       "test"
     ],
     "types": [
+      "express",
+      "faker",
+      "jest",
       "node",
-      "jest"
     ],
   },
   "include": [
