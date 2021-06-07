@@ -1,7 +1,8 @@
 import * as listItemsDB from '../db/list-items'
 import * as booksDB from '../db/books'
+import {BuildNext, Req, Res} from 'types'
 
-async function setListItem(req, res, next) {
+async function setListItem(req: Partial<Req>, res: Res, next?: BuildNext) {
   const {id} = req.params
   const listItem = await listItemsDB.readById(id)
   if (!listItem) {
@@ -20,16 +21,16 @@ async function setListItem(req, res, next) {
   }
 }
 
-async function getListItems(req, res) {
+async function getListItems(req: Partial<Req>, res: Res) {
   const listItems = await listItemsDB.query({ownerId: req.user.id})
   res.json({listItems: await expandBookDataMultiple(listItems)})
 }
 
-async function getListItem(req, res) {
+async function getListItem(req: Partial<Req>, res: Res) {
   res.json({listItem: await expandBookData(req.listItem)})
 }
 
-async function createListItem(req, res) {
+async function createListItem(req: Partial<Req>, res: Res) {
   const {
     user: {id: ownerId},
   } = req

@@ -1,6 +1,5 @@
 import faker from 'faker'
-import {MockedFunction} from 'ts-jest/dist/utils/testing'
-import {Book, ListItem, User} from 'types'
+import {Book, BuildNext, Req, Res, ListItem, User} from 'types'
 import {getUserToken, getSaltAndHash} from '../../src/utils/auth'
 
 // passwords must have at least these kinds of characters to be valid, so we'll
@@ -67,21 +66,15 @@ function loginForm(overrides) {
   }
 }
 
-interface BuildReq {
-  user?: User
-  [key: string]: any
-}
-function buildReq({user = buildUser(), ...overrides}: BuildReq = {}) {
-  const req = {user, body: {}, params: {}, ...overrides}
+function buildReq({
+  user = buildUser(),
+  ...overrides
+}: Partial<Req> = {}): Partial<Req> {
+  const req = {user, body: {}, params: {id: ''}, ...overrides}
   return req
 }
 
-interface BuildRes {
-  json: MockedFunction<() => any>
-  status: MockedFunction<() => any>
-  [key: string]: any
-}
-function buildRes(overrides = {}): BuildRes {
+function buildRes(overrides: Partial<Req> = {}): Res {
   const res = {
     json: jest.fn(() => res).mockName('json'),
     status: jest.fn(() => res).mockName('status'),
@@ -90,7 +83,7 @@ function buildRes(overrides = {}): BuildRes {
   return res
 }
 
-function buildNext(impl: any) {
+function buildNext(impl?: any): BuildNext {
   return jest.fn(impl).mockName('next')
 }
 

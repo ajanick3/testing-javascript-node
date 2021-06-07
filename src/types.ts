@@ -1,3 +1,6 @@
+import {Request, Response} from 'express'
+import {MockedFunction} from 'ts-jest/dist/utils/testing'
+
 export type Book = {
   id: string
   title: string
@@ -23,3 +26,23 @@ export type ListItem = {
   finishDate: Date | number
   startDate: Date | number
 }
+
+export interface Req extends Request {
+  user?: User
+  listItem?: ListItem
+  body: {
+    bookId?: string
+  }
+  params: {
+    id?: string
+  }
+  [key: string]: any
+}
+
+export interface Res extends Response {
+  json: MockedFunction<({}) => any>
+  status: MockedFunction<(code: number) => any>
+  [key: string]: any
+}
+
+export type BuildNext = MockedFunction<any>
