@@ -8,7 +8,7 @@ import {
   buildListItem,
 } from 'utils/generate.ts'
 import * as booksDB from '../../db/books.ts'
-import * as listItemsController from '../list-items-controller'
+import * as listItemsController from '../list-items-controller.ts'
 
 jest.mock('../../db/books')
 

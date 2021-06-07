@@ -1,4 +1,5 @@
 import faker from 'faker'
+import {MockedFunction} from 'ts-jest/dist/utils/testing'
 import {Book, ListItem, User} from 'types'
 import {getUserToken, getSaltAndHash} from '../../src/utils/auth'
 
@@ -75,7 +76,12 @@ function buildReq({user = buildUser(), ...overrides}: BuildReq = {}) {
   return req
 }
 
-function buildRes(overrides = {}): Response {
+interface BuildRes {
+  json: MockedFunction<() => any>
+  status: MockedFunction<() => any>
+  [key: string]: any
+}
+function buildRes(overrides = {}): BuildRes {
   const res = {
     json: jest.fn(() => res).mockName('json'),
     status: jest.fn(() => res).mockName('status'),
