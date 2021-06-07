@@ -6,8 +6,8 @@ import {
   buildUser,
   buildBook,
   buildListItem,
-} from 'utils/generate'
-import * as booksDB from '../../db/books'
+} from 'utils/generate.ts'
+import * as booksDB from '../../db/books.ts'
 import * as listItemsController from '../list-items-controller'
 
 jest.mock('../../db/books')

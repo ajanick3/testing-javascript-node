@@ -1,13 +1,17 @@
 import _ from 'lodash'
+import {ListItem} from 'types'
 import {generateUUID} from './utils'
 
-let listItems = []
+let listItems: ListItem[] = []
 
-async function query(queryObj) {
+async function query(queryObj: Partial<ListItem>): Promise<ListItem[]> {
   return _.filter(listItems, queryObj)
 }
 
-async function create(listItemData) {
+async function create(listItemData: {
+  bookId: string
+  ownerId: string
+}): Promise<ListItem> {
   const {bookId, ownerId} = listItemData
   if (!bookId) {
     throw new Error(`New listItems must have a bookId`)
@@ -16,7 +20,7 @@ async function create(listItemData) {
     throw new Error(`New listItems must have an ownerId`)
   }
 
-  const newListItem = {
+  const newListItem: ListItem = {
     id: generateUUID(),
     rating: -1,
     notes: '',
@@ -28,11 +32,14 @@ async function create(listItemData) {
   return newListItem
 }
 
-async function readById(id) {
+async function readById(id: string): Promise<ListItem> {
   return _.find(listItems, {id})
 }
 
-async function update(listItemId, updates) {
+async function update(
+  listItemId: string,
+  updates: ListItem,
+): Promise<ListItem> {
   const listItem = await readById(listItemId)
   if (!listItem) {
     return null
@@ -45,11 +52,11 @@ async function update(listItemId, updates) {
   return updatedListItem
 }
 
-async function remove(id) {
-  listItems = listItems.filter(li => li.id !== id)
+async function remove(id: string) {
+  listItems = listItems.filter((li) => li.id !== id)
 }
 
-async function insertMany(manyListItems) {
+async function insertMany(manyListItems: ListItem[]) {
   listItems = [...listItems, ...manyListItems]
 }
 

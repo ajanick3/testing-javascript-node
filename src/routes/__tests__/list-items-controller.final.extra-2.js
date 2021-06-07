@@ -9,9 +9,9 @@ import {
   buildBook,
   buildListItem,
   notes,
-} from 'utils/generate'
-import * as listItemsDB from '../../db/list-items'
-import * as booksDB from '../../db/books'
+} from 'utils/generate.ts'
+import * as listItemsDB from '../../db/list-items.ts'
+import * as booksDB from '../../db/books.ts'
 import * as listItemsController from '../list-items-controller'
 
 jest.mock('../../db/list-items')
