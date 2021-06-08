@@ -23,7 +23,10 @@ beforeEach(() => {
 test('getListItem returns the req.listItem', async () => {
   const user = buildUser()
   const book = buildBook()
-  const listItem = buildListItem({bookId: book.id, ownerId: user.id})
+  const listItem = buildListItem({
+    bookId: book.id,
+    ownerId: user.id,
+  })
 
   mockedBooksDB.readById.mockResolvedValueOnce(book)
 
@@ -42,7 +45,9 @@ test('getListItem returns the req.listItem', async () => {
 })
 
 test('createListItem returns 400 error if no bookId', async () => {
-  const req = buildReq({body: {bookId: undefined}})
+  const req = buildReq({
+    body: {bookId: undefined},
+  })
   const res = buildRes()
 
   await listItemsController.createListItem(req, res)
@@ -61,10 +66,15 @@ test('createListItem returns 400 error if no bookId', async () => {
 
 test('setListItem sets listItem on the req', async () => {
   const user = buildUser()
-  const listItem = buildListItem({ownerId: user.id})
+  const listItem = buildListItem({
+    ownerId: user.id,
+  })
   mockedListItemsDB.readById.mockResolvedValueOnce(listItem)
 
-  const req = buildReq({user, params: {id: listItem.id}})
+  const req = buildReq({
+    user,
+    params: {id: listItem.id},
+  })
   const res = buildRes()
   const next = buildNext()
 
@@ -82,7 +92,9 @@ test('setListItem returns a 404 if listItem does not exist', async () => {
   mockedListItemsDB.readById.mockResolvedValueOnce(null)
 
   const fakeListItemId = 'FAKE_LIST_ITEM_ID'
-  const req = buildReq({params: {id: fakeListItemId}})
+  const req = buildReq({
+    params: {id: fakeListItemId},
+  })
   const res = buildRes()
   const next = buildNext()
 
@@ -113,7 +125,10 @@ test('setListItem returns a 403 if listItem does not belong to user', async () =
   })
   mockedListItemsDB.readById.mockResolvedValueOnce(listItem)
 
-  const req = buildReq({user, params: {id: listItem.id}})
+  const req = buildReq({
+    user,
+    params: {id: listItem.id},
+  })
   const res = buildRes()
   const next = buildNext()
 
@@ -207,13 +222,19 @@ test("getListItems returns the user's list items (iterated)", async () => {
 test('createListItem creates and returns a list item', async () => {
   const user = buildUser()
   const book = buildBook()
-  const createdListItem = buildListItem({ownerId: user.id, bookId: book.id})
+  const createdListItem = buildListItem({
+    ownerId: user.id,
+    bookId: book.id,
+  })
 
   mockedListItemsDB.query.mockResolvedValueOnce([])
   mockedListItemsDB.create.mockResolvedValueOnce(createdListItem)
   mockedBooksDB.readById.mockResolvedValueOnce(book)
 
-  const req = buildReq({user, body: {bookId: book.id}})
+  const req = buildReq({
+    user,
+    body: {bookId: book.id},
+  })
   const res = buildRes()
 
   await listItemsController.createListItem(req, res)
