@@ -32,6 +32,7 @@ export interface Req extends Request {
   listItem?: ListItem
   body: {
     bookId?: string
+    [key: string]: any
   }
   params: {
     id?: string

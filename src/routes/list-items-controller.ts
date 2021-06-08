@@ -1,6 +1,6 @@
 import * as listItemsDB from '../db/list-items'
 import * as booksDB from '../db/books'
-import {BuildNext, Req, Res} from 'types'
+import {BuildNext, ListItem, Req, Res} from 'types'
 
 async function setListItem(req: Partial<Req>, res: Res, next?: BuildNext) {
   const {id} = req.params
@@ -51,22 +51,22 @@ async function createListItem(req: Partial<Req>, res: Res) {
   res.json({listItem: await expandBookData(listItem)})
 }
 
-async function updateListItem(req, res) {
+async function updateListItem(req: Partial<Req>, res: Res) {
   const updatedListItem = await listItemsDB.update(req.listItem.id, req.body)
   res.json({listItem: await expandBookData(updatedListItem)})
 }
 
-async function deleteListItem(req, res) {
+async function deleteListItem(req: Req, res: Res) {
   await listItemsDB.remove(req.listItem.id)
   res.json({success: true})
 }
 
-async function expandBookData(listItem) {
+async function expandBookData(listItem: ListItem) {
   const book = await booksDB.readById(listItem.bookId)
   return {...listItem, book}
 }
 
-async function expandBookDataMultiple(listItems) {
+async function expandBookDataMultiple(listItems: ListItem[]) {
   const books = await booksDB.readManyById(listItems.map((li) => li.bookId))
   return listItems.map((listItem) => ({
     ...listItem,

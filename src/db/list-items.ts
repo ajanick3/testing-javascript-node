@@ -38,7 +38,7 @@ async function readById(id: string): Promise<ListItem> {
 
 async function update(
   listItemId: string,
-  updates: ListItem,
+  updates: Partial<ListItem>,
 ): Promise<ListItem> {
   const listItem = await readById(listItemId)
   if (!listItem) {
