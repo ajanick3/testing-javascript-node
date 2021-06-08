@@ -4,8 +4,8 @@
 import axios from 'axios'
 import {resetDb, insertTestUser} from 'utils/db-utils'
 import {getData, handleRequestFailure, resolve} from 'utils/async'
-import * as generate from 'utils/generate'
-import * as booksDB from '../db/books'
+import * as generate from 'utils/generate.ts'
+import * as booksDB from '../db/books.ts'
 import startServer from '../start'
 
 let baseURL, server
