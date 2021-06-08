@@ -11,6 +11,17 @@ import * as booksDB from '../../db/books'
 import * as listItemsDB from '../../db/list-items'
 import * as listItemsController from '../list-items-controller'
 
+/**
+setListItem
+getListItems
+getListItem
+createListItem
+updateListItem
+deleteListItem
+expandBookData
+expandBookDataMultiple
+ */
+
 jest.mock('../../db/books')
 const mockedBooksDB = mocked(booksDB)
 jest.mock('../../db/list-items')
