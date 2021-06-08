@@ -1,21 +1,24 @@
 // Testing Authentication API Routes
 
 import axios, {AxiosResponse} from 'axios'
-import {AuthResponse, User} from 'types'
+import {AuthResponse} from 'types'
+import {handleRequestFailure} from 'utils/async'
 import {resetDb} from '../../test/utils/db-utils'
 import {loginForm} from '../../test/utils/generate'
 import startServer from '../start'
 
-const baseURL = 'http://localhost:8000/api'
+const baseURL = 'http://localhost:8001/api'
 const api = axios.create({baseURL})
+
+api.interceptors.response.use(function onSuccess(response) {
+  return response
+}, handleRequestFailure)
 
 let server
 beforeAll(async () => {
-  server = await startServer({port: 8000})
+  server = await startServer({port: 8001})
 })
-
 afterAll(() => server.close())
-
 beforeEach(() => resetDb())
 
 test('auth flow', async () => {
