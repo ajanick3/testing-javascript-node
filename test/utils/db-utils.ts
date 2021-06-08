@@ -2,14 +2,14 @@ import _ from 'lodash'
 import * as booksDB from '../../src/db/books'
 import * as usersDB from '../../src/db/users'
 import * as listItemsDB from '../../src/db/list-items'
-import {getUserToken} from '../../src/utils/auth'
+import {getUserToken} from '../../src/utils/auth'// './auth'
 import * as generate from './generate'
 
 async function initDb({
   books = Array.from({length: 100}, () => generate.buildBook()),
   users = Array.from({length: 10}, () => generate.buildUser()),
   listItems = _.flatten(
-    users.map(u =>
+    users.map((u) =>
       Array.from({length: Math.floor(Math.random() * 4)}, () =>
         generate.buildListItem({ownerId: u.id, bookId: random(books).id}),
       ),

@@ -8,7 +8,7 @@ import {getLocalStrategy} from './utils/auth'
 import errorMiddleware from './utils/error-middleware'
 import getRouter from './routes'
 
-function startServer({port = process.env.PORT} = {}) {
+function startServer({port = Number(process.env.PORT)} = {port: 8000}) {
   const app = express()
   app.use(cors())
   app.use(bodyParser.json())
@@ -19,12 +19,13 @@ function startServer({port = process.env.PORT} = {}) {
   app.use('/api', router)
   app.use(errorMiddleware)
 
-  return new Promise(resolve => {
-    const server = app.listen(port, () => {
+  return new Promise((resolve) => {
+    // TODO any
+    const server: any = app.listen(port, () => {
       logger.info(`Listening on port ${server.address().port}`)
       const originalClose = server.close.bind(server)
       server.close = () => {
-        return new Promise(resolveClose => {
+        return new Promise((resolveClose) => {
           originalClose(resolveClose)
         })
       }

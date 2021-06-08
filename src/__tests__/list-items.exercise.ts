@@ -1,7 +1,7 @@
 // Testing CRUD API Routes
 
 import axios from 'axios'
-import {resetDb, insertTestUser} from 'utils/db-utils'
+import {insertTestUser, resetDb} from '../../test/utils/db-utils'
 import {getData, handleRequestFailure, resolve} from 'utils/async'
 import * as generate from 'utils/generate'
 import * as booksDB from '../db/books'
@@ -14,7 +14,7 @@ beforeAll(async () => {
   baseURL = `http://localhost:${server.address().port}/api`
 })
 
-afterAll(() => server.close())
+afterAll(() => server?.close())
 
 beforeEach(() => resetDb())
 
