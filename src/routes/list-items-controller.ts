@@ -56,7 +56,7 @@ async function updateListItem(req: Partial<Req>, res: Res) {
   res.json({listItem: await expandBookData(updatedListItem)})
 }
 
-async function deleteListItem(req: Req, res: Res) {
+async function deleteListItem(req: Partial<Req>, res: Res) {
   await listItemsDB.remove(req.listItem.id)
   res.json({success: true})
 }
