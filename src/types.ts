@@ -47,3 +47,8 @@ export interface Res extends Response {
 }
 
 export type BuildNext = MockedFunction<any>
+
+export type LoginForm = {
+  username: string
+  password: string
+}

@@ -1,5 +1,5 @@
 import faker from 'faker'
-import {Book, BuildNext, Req, Res, ListItem, User} from 'types'
+import {Book, BuildNext, Req, Res, ListItem, User, LoginForm} from 'types'
 import {getUserToken, getSaltAndHash} from '../../src/utils/auth'
 
 // passwords must have at least these kinds of characters to be valid, so we'll
@@ -19,6 +19,7 @@ function buildUser({
   return {
     id,
     username,
+    password,
     ...getSaltAndHash(password),
     ...overrides,
   }
@@ -72,7 +73,7 @@ function token(user: User): User {
   return getUserToken(buildUser(user))
 }
 
-function loginForm(overrides) {
+function loginForm(overrides = {}): LoginForm {
   return {
     username: getUsername(),
     password: getPassword(),
