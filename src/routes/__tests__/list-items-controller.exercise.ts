@@ -5,6 +5,7 @@ import {
   buildReq,
   buildRes,
   buildNext,
+  notes,
 } from 'utils/generate'
 import {mocked} from 'ts-jest/utils'
 import * as booksDB from '../../db/books'
@@ -301,5 +302,36 @@ test('createListItem returns 400 error if user already has a list item for the g
       },
     ]
   `)
+  expect(res.json).toHaveBeenCalledTimes(1)
+})
+
+test('updateListItem updates an existing list item', async () => {
+  const user = buildUser()
+  const book = buildBook()
+  const listItem = buildListItem({ownerId: user.id, bookId: book.id})
+  const updates = {notes: notes()}
+  const mergedListItemAndUpdates = {...listItem, ...updates}
+
+  mockedListItemsDB.update.mockResolvedValueOnce(mergedListItemAndUpdates)
+  mockedBooksDB.readById.mockResolvedValueOnce(book)
+
+  const req = buildReq({
+    user,
+    listItem,
+    body: updates,
+  })
+  const res = buildRes()
+
+  await listItemsController.updateListItem(req, res)
+
+  expect(mockedListItemsDB.update).toHaveBeenCalledWith(listItem.id, updates)
+  expect(mockedListItemsDB.update).toHaveBeenCalledTimes(1)
+
+  expect(mockedBooksDB.readById).toHaveBeenCalledWith(book.id)
+  expect(mockedBooksDB.readById).toHaveBeenCalledTimes(1)
+
+  expect(res.json).toHaveBeenCalledWith({
+    listItem: {...mergedListItemAndUpdates, book},
+  })
   expect(res.json).toHaveBeenCalledTimes(1)
 })
