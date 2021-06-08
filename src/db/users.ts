@@ -20,8 +20,11 @@ async function insertMany(manyUsers: User[]) {
   users = [...users, ...manyUsers]
 }
 
-async function insert(user: User): Promise<User> {
-  const newUser = {id: generateUUID(), ...user}
+async function insert(user: {
+  username: string
+  password: string
+}): Promise<User> {
+  const newUser: User = {id: generateUUID(), ...user}
   users = [...users, newUser]
   return newUser
 }

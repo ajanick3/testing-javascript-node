@@ -1,57 +1,58 @@
 // Testing Authentication API Routes
 
-import axios from 'axios'
+import axios, {AxiosResponse} from 'axios'
+import {AuthResponse, User} from 'types'
 import {resetDb} from '../../test/utils/db-utils'
 import {loginForm} from '../../test/utils/generate'
 import startServer from '../start'
 
-// 🐨 you'll need to start/stop the server using beforeAll and afterAll
-// 💰 This might be helpful: server = await startServer({port: 8000})
+const baseURL = 'http://localhost:8000/api'
+const api = axios.create({baseURL})
+
 let server
 beforeAll(async () => {
   server = await startServer({port: 8000})
 })
 
-afterAll(async () => {
-  await server.close()
-})
+afterAll(() => server.close())
 
-// 🐨 beforeEach test in this file we want to reset the database
-beforeEach(() => {
-  resetDb()
-})
+beforeEach(() => resetDb())
 
 test('auth flow', async () => {
-  // 🐨 get a username and password from generate.loginForm()
-  loginForm()
-  //
+  const {username, password} = loginForm()
+
   // register
-  // 🐨 use axios.post to post the username and password to the registration endpoint
-  // 💰 http://localhost:8000/api/auth/register
-  //
-  // 🐨 assert that the result you get back is correct
-  // 💰 it'll have an id and a token that will be random every time.
-  // You can either only check that `result.data.user.username` is correct, or
-  // for a little extra credit 💯 you can try using `expect.any(String)`
-  // (an asymmetric matcher) with toEqual.
-  // 📜 https://jestjs.io/docs/en/expect#expectanyconstructor
-  // 📜 https://jestjs.io/docs/en/expect#toequalvalue
-  //
+  const registerResponse: AxiosResponse<AuthResponse> = await api.post(
+    'auth/register',
+    {
+      username,
+      password,
+    },
+  )
+  expect(registerResponse.data.user).toEqual({
+    token: expect.any(String),
+    id: expect.any(String),
+    username,
+  })
+
   // login
-  // 🐨 use axios.post to post the username and password again, but to the login endpoint
-  // 💰 http://localhost:8000/api/auth/login
-  //
-  // 🐨 assert that the result you get back is correct
-  // 💰 tip: the data you get back is exactly the same as the data you get back
-  // from the registration call, so this can be done really easily by comparing
-  // the data of those results with toEqual
-  //
+  const loginResponse: AxiosResponse<AuthResponse> = await api.post(
+    'auth/login',
+    {
+      username,
+      password,
+    },
+  )
+  expect(loginResponse.data.user).toEqual(registerResponse.data.user)
+
   // authenticated request
-  // 🐨 use axios.get(url, config) to GET the user's information
-  // 💰 http://localhost:8000/api/auth/me
-  // 💰 This request must be authenticated via the Authorization header which
-  // you can add to the config object: {headers: {Authorization: `Bearer ${token}`}}
-  // Remember that you have the token from the registration and login requests.
+  const meResponse: AxiosResponse<AuthResponse> = await api.get('auth/me', {
+    headers: {
+      Authorization: `Bearer ${loginResponse.data.user.token}`,
+    },
+  })
+  expect(meResponse.data.user).toEqual(loginResponse.data.user)
+
   //
   // 🐨 assert that the result you get back is correct
   // 💰 (again, this should be the same data you get back in the other requests,

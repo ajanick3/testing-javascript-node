@@ -6,12 +6,15 @@ import {
   isPasswordAllowed,
 } from '../utils/auth'
 import * as usersDB from '../db/users'
-import {User} from 'types'
+import {AuthResponse, User} from 'types'
 
-const authUserToJSON = (user) => ({
-  ...userToJSON(user),
-  token: getUserToken(user),
-})
+const authUserToJSON = (user: User) => {
+  const {password, ...userWithoutPassword} = user
+  return {
+    ...userToJSON(userWithoutPassword),
+    token: getUserToken(user),
+  }
+}
 
 async function register(req, res) {
   const {username, password} = req.body
@@ -53,11 +56,6 @@ async function login(req, res, next) {
   } else {
     return res.status(400).json(info)
   }
-}
-
-type AuthResponse = {
-  user: User
-  info: any
 }
 
 function authenticate(req, res, next): Promise<AuthResponse> {

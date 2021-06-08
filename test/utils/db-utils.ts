@@ -2,8 +2,9 @@ import _ from 'lodash'
 import * as booksDB from '../../src/db/books'
 import * as usersDB from '../../src/db/users'
 import * as listItemsDB from '../../src/db/list-items'
-import {getUserToken} from '../../src/utils/auth'// './auth'
+import {getUserToken} from '../../src/utils/auth'
 import * as generate from './generate'
+import { User } from 'types'
 
 async function initDb({
   books = Array.from({length: 100}, () => generate.buildBook()),
@@ -29,7 +30,7 @@ function random(array) {
 }
 
 async function insertTestUser(
-  testUser = generate.buildUser({
+  testUser: User = generate.buildUser({
     username: 'joe',
     password: 'joe',
   }),

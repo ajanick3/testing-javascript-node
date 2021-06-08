@@ -15,6 +15,7 @@ export type User = {
   id: string
   username: string
   password: string
+  token?: string
 }
 
 export type ListItem = {
@@ -47,6 +48,13 @@ export interface Res extends Response {
 }
 
 export type BuildNext = MockedFunction<any>
+
+// Auth
+
+export type AuthResponse = {
+  user: User
+  info: any
+}
 
 export type LoginForm = {
   username: string
