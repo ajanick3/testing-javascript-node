@@ -173,3 +173,33 @@ test("getListItems returns the user's list items", async () => {
     ],
   })
 })
+
+test("getListItems returns the user's list items (iterated)", async () => {
+  const user = buildUser()
+  const books = Array.from(Array(3)).map((_) => buildBook())
+  const userListItems = books.map((book) =>
+    buildListItem({
+      ownerId: user.id,
+      bookId: book.id,
+    }),
+  )
+
+  mockedBooksDB.readManyById.mockResolvedValueOnce(books)
+  mockedListItemsDB.query.mockResolvedValueOnce(userListItems)
+
+  const req = buildReq({user})
+  const res = buildRes()
+
+  await listItemsController.getListItems(req, res)
+  expect(mockedBooksDB.readManyById).toHaveBeenCalledWith(
+    books.map((book) => book.id),
+  )
+  expect(mockedBooksDB.readManyById).toHaveBeenCalledTimes(1)
+
+  expect(mockedListItemsDB.query).toHaveBeenCalledWith({ownerId: user.id})
+  expect(mockedListItemsDB.query).toHaveBeenCalledTimes(1)
+
+  expect(res.json).toHaveBeenCalledWith({
+    listItems: books.map((book, i) => ({...userListItems[i], book})),
+  })
+})
