@@ -203,3 +203,36 @@ test("getListItems returns the user's list items (iterated)", async () => {
     listItems: books.map((book, i) => ({...userListItems[i], book})),
   })
 })
+
+test('createListItem creates and returns a list item', async () => {
+  const user = buildUser()
+  const book = buildBook()
+  const createdListItem = buildListItem({ownerId: user.id, bookId: book.id})
+
+  mockedListItemsDB.query.mockResolvedValueOnce([])
+  mockedListItemsDB.create.mockResolvedValueOnce(createdListItem)
+  mockedBooksDB.readById.mockResolvedValueOnce(book)
+
+  const req = buildReq({user, body: {bookId: book.id}})
+  const res = buildRes()
+
+  await listItemsController.createListItem(req, res)
+
+  expect(mockedListItemsDB.query).toHaveBeenCalledWith({
+    ownerId: user.id,
+    bookId: book.id,
+  })
+  expect(mockedListItemsDB.query).toHaveBeenCalledTimes(1)
+
+  expect(mockedListItemsDB.create).toHaveBeenCalledWith({
+    ownerId: user.id,
+    bookId: book.id,
+  })
+  expect(mockedListItemsDB.create).toHaveBeenCalledTimes(1)
+
+  expect(mockedBooksDB.readById).toHaveBeenCalledWith(book.id)
+  expect(mockedBooksDB.readById).toHaveBeenCalledTimes(1)
+
+  expect(res.json).toHaveBeenCalledWith({listItem: {...createdListItem, book}})
+  expect(res.json).toHaveBeenCalledTimes(1)
+})
