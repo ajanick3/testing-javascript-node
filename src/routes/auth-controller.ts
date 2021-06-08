@@ -6,8 +6,9 @@ import {
   isPasswordAllowed,
 } from '../utils/auth'
 import * as usersDB from '../db/users'
+import {User} from 'types'
 
-const authUserToJSON = user => ({
+const authUserToJSON = (user) => ({
   ...userToJSON(user),
   token: getUserToken(user),
 })
@@ -30,6 +31,7 @@ async function register(req, res) {
   }
   const newUser = await usersDB.insert({
     username,
+    password,
     ...getSaltAndHash(password),
   })
   return res.json({user: authUserToJSON(newUser)})
@@ -53,15 +55,24 @@ async function login(req, res, next) {
   }
 }
 
-function authenticate(req, res, next) {
+type AuthResponse = {
+  user: User
+  info: any
+}
+
+function authenticate(req, res, next): Promise<AuthResponse> {
   return new Promise((resolve, reject) => {
-    passport.authenticate('local', {session: false}, (err, user, info) => {
-      if (err) {
-        reject(err)
-      } else {
-        resolve({user, info})
-      }
-    })(req, res, next)
+    passport.authenticate(
+      'local',
+      {session: false},
+      (err: Error, user: User, info: any) => {
+        if (err) {
+          reject(err)
+        } else {
+          resolve({user, info})
+        }
+      },
+    )(req, res, next)
   })
 }
 
