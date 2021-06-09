@@ -2,9 +2,10 @@
 
 import axios, {AxiosResponse} from 'axios'
 import {AuthResponse} from 'types'
-import {handleRequestFailure} from 'utils/async'
+import {handleRequestFailure, resolve} from 'utils/async'
 import {resetDb} from '../../test/utils/db-utils'
-import {loginForm} from '../../test/utils/generate'
+import {buildUser, loginForm} from '../../test/utils/generate'
+import * as usersDB from '../db/users'
 import startServer from '../start'
 
 const baseURL = `http://localhost:${process.env.PORT}/api`
@@ -55,4 +56,21 @@ test('auth flow', async () => {
     },
   })
   expect(meResponse.data.user).toEqual(loginResponse.data.user)
+})
+
+test('username should be unique', async () => {
+  const {username, password} = loginForm()
+
+  await usersDB.insert(buildUser({username}))
+
+  // register again with same username
+  const error = await api
+    .post('auth/register', {
+      username,
+      password,
+    })
+    .catch(resolve)
+  expect(error).toMatchInlineSnapshot(
+    `[Error: 400: {"message":"username taken"}]`,
+  )
 })
