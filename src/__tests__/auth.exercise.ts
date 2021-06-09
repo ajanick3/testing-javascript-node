@@ -4,7 +4,12 @@ import axios, {AxiosResponse} from 'axios'
 import {AuthResponse} from 'types'
 import {handleRequestFailure, resolve} from 'utils/async'
 import {resetDb} from '../../test/utils/db-utils'
-import {buildUser, loginForm} from '../../test/utils/generate'
+import {
+  buildUser,
+  loginForm,
+  password,
+  username,
+} from '../../test/utils/generate'
 import * as usersDB from '../db/users'
 import startServer from '../start'
 
@@ -58,7 +63,7 @@ test('auth flow', async () => {
   expect(meResponse.data.user).toEqual(loginResponse.data.user)
 })
 
-test('username should be unique', async () => {
+test('username taken', async () => {
   const {username, password} = loginForm()
 
   await usersDB.insert(buildUser({username}))
@@ -79,5 +84,39 @@ test('get "me" and unauthenticated returns error', async () => {
   const error = await api.get('auth/me').catch(resolve)
   expect(error).toMatchInlineSnapshot(
     `[Error: 401: {"code":"credentials_required","message":"No authorization token was found"}]`,
+  )
+})
+
+test('username required', async () => {
+  const error = await api
+    .post('auth/register', {
+      password: password(),
+    })
+    .catch(resolve)
+  expect(error).toMatchInlineSnapshot(
+    `[Error: 400: {"message":"username can't be blank"}]`,
+  )
+})
+
+test('password required', async () => {
+  const error = await api
+    .post('auth/register', {
+      username: username(),
+    })
+    .catch(resolve)
+  expect(error).toMatchInlineSnapshot(
+    `[Error: 400: {"message":"password can't be blank"}]`,
+  )
+})
+
+test('weak password', async () => {
+  const error = await api
+    .post('auth/register', {
+      username: username(),
+      password: ' ',
+    })
+    .catch(resolve)
+  expect(error).toMatchInlineSnapshot(
+    `[Error: 400: {"message":"password is not strong enough"}]`,
   )
 })
