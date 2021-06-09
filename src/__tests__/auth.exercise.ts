@@ -74,3 +74,10 @@ test('username should be unique', async () => {
     `[Error: 400: {"message":"username taken"}]`,
   )
 })
+
+test('get "me" and unauthenticated returns error', async () => {
+  const error = await api.get('auth/me').catch(resolve)
+  expect(error).toMatchInlineSnapshot(
+    `[Error: 401: {"code":"credentials_required","message":"No authorization token was found"}]`,
+  )
+})
