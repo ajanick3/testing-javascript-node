@@ -90,6 +90,7 @@ test('get "me" and unauthenticated returns error', async () => {
 test('username required to register', async () => {
   const error = await api
     .post('auth/register', {
+      // no username
       password: password(),
     })
     .catch(resolve)
@@ -102,6 +103,7 @@ test('password required to register', async () => {
   const error = await api
     .post('auth/register', {
       username: username(),
+      // no password
     })
     .catch(resolve)
   expect(error).toMatchInlineSnapshot(
@@ -123,6 +125,7 @@ test('weak password', async () => {
 test('username required to log in', async () => {
   const error = await api
     .post('auth/login', {
+      // no username
       password: password(),
     })
     .catch(resolve)
@@ -135,6 +138,7 @@ test('password required to log in', async () => {
   const error = await api
     .post('auth/login', {
       username: username(),
+      // no password
     })
     .catch(resolve)
   expect(error).toMatchInlineSnapshot(
@@ -146,6 +150,7 @@ test('user must exist to log in', async () => {
   const error = await api
     .post('auth/login', {
       username: `__won't_exist__`,
+      // fails before password check
     })
     .catch(resolve)
   expect(error).toMatchInlineSnapshot(
