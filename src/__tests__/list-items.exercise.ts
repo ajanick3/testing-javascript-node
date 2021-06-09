@@ -1,6 +1,6 @@
 // Testing CRUD API Routes
 
-import axios, {AxiosResponse} from 'axios'
+import axios from 'axios'
 import {insertTestUser, resetDb} from '../../test/utils/db-utils'
 import {getData, handleRequestFailure, resolve} from 'utils/async'
 import * as generate from 'utils/generate'
@@ -37,17 +37,10 @@ async function setup() {
 test('listItem CRUD', async () => {
   const {testUser, authAPI} = await setup()
 
-  // 🐨 create a book object and insert it into the database
-  // 💰 use generate.buildBook and await booksDB.insert
   const book = generate.buildBook()
   await mockedBooksDB.insert(book)
 
-  // expect(mockedBooksDB.insert).toHaveBeenCalledTimes(1)
-  // expect(mockedBooksDB.insert).toHaveBeenCalledWith(book.id)
-
   // CREATE
-  // 🐨 create a new list-item by posting to the list-items endpoint with a bookId
-  // 💰 the data you send should be: {bookId: book.id}
   const cData: AxiosResponseWrapper<ListItem> = await authAPI.post(
     'list-items',
     {bookId: book.id},
@@ -74,8 +67,6 @@ test('listItem CRUD', async () => {
   expect(uData.listItem).toEqual({...rData.listItem, ...updates})
 
   // DELETE
-  // 🐨 make a DELETE request to the `listItemIdUrl`
-  // 🐨 assert that this returns the right stuff (💰 {success: true})
   const dData: AxiosResponseWrapper<ListItem> = await authAPI.delete(
     listItemIdUrl,
   )
