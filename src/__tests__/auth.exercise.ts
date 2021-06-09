@@ -87,7 +87,7 @@ test('get "me" and unauthenticated returns error', async () => {
   )
 })
 
-test('username required', async () => {
+test('username required to register', async () => {
   const error = await api
     .post('auth/register', {
       password: password(),
@@ -98,7 +98,7 @@ test('username required', async () => {
   )
 })
 
-test('password required', async () => {
+test('password required to register', async () => {
   const error = await api
     .post('auth/register', {
       username: username(),
@@ -118,5 +118,37 @@ test('weak password', async () => {
     .catch(resolve)
   expect(error).toMatchInlineSnapshot(
     `[Error: 400: {"message":"password is not strong enough"}]`,
+  )
+})
+test('username required to log in', async () => {
+  const error = await api
+    .post('auth/login', {
+      password: password(),
+    })
+    .catch(resolve)
+  expect(error).toMatchInlineSnapshot(
+    `[Error: 400: {"message":"username can't be blank"}]`,
+  )
+})
+
+test('password required to log in', async () => {
+  const error = await api
+    .post('auth/login', {
+      username: username(),
+    })
+    .catch(resolve)
+  expect(error).toMatchInlineSnapshot(
+    `[Error: 400: {"message":"password can't be blank"}]`,
+  )
+})
+
+test('user must exist to log in', async () => {
+  const error = await api
+    .post('auth/login', {
+      username: `__won't_exist__`,
+    })
+    .catch(resolve)
+  expect(error).toMatchInlineSnapshot(
+    `[Error: 400: {"message":"password can't be blank"}]`,
   )
 })
