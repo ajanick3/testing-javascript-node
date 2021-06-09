@@ -1,11 +1,13 @@
 // Testing CRUD API Routes
 
-import axios from 'axios'
+import axios, {AxiosResponse} from 'axios'
 import {insertTestUser, resetDb} from '../../test/utils/db-utils'
 import {getData, handleRequestFailure, resolve} from 'utils/async'
 import * as generate from 'utils/generate'
 import * as booksDB from '../db/books'
 import startServer from '../start'
+import {mocked} from 'ts-jest/utils'
+import {AxiosResponseWrapper, ListItem} from 'types'
 
 let baseURL, server
 
@@ -17,6 +19,9 @@ beforeAll(async () => {
 afterAll(() => server?.close())
 
 beforeEach(() => resetDb())
+
+jest.mock('../db/books')
+const mockedBooksDB = mocked(booksDB)
 
 async function setup() {
   // 💰 this bit isn't as important as the rest of what you'll be learning today
@@ -34,38 +39,60 @@ test('listItem CRUD', async () => {
 
   // 🐨 create a book object and insert it into the database
   // 💰 use generate.buildBook and await booksDB.insert
+  const book = generate.buildBook()
+  await mockedBooksDB.insert(book)
+
+  // expect(mockedBooksDB.insert).toHaveBeenCalledTimes(1)
+  // expect(mockedBooksDB.insert).toHaveBeenCalledWith(book.id)
 
   // CREATE
   // 🐨 create a new list-item by posting to the list-items endpoint with a bookId
   // 💰 the data you send should be: {bookId: book.id}
-
-  // 🐨 assert that the data you get back is correct
-  // 💰 it should have an ownerId (testUser.id) and a bookId (book.id)
-  // 💰 if you don't want to assert on all the other properties, you can use
-  // toMatchObject: https://jestjs.io/docs/en/expect#tomatchobjectobject
+  const cData: AxiosResponseWrapper<ListItem> = await authAPI.post(
+    'list-items',
+    {bookId: book.id},
+  )
+  expect(cData.listItem).toMatchObject({
+    ownerId: testUser.id,
+    bookId: book.id,
+  })
 
   // 💰 you might find this useful for the future requests:
-  // const listItemId = cData.listItem.id
-  // const listItemIdUrl = `list-items/${listItemId}`
+  const listItemId = cData.listItem.id
+  const listItemIdUrl = `list-items/${listItemId}`
 
   // READ
-  // 🐨 make a GET to the `listItemIdUrl`
-  // 🐨 assert that this returns the same thing you got when you created the list item
+  const rData: AxiosResponseWrapper<ListItem> = await authAPI.get(listItemIdUrl)
+  expect(rData.listItem).toEqual(cData.listItem)
 
   // UPDATE
-  // 🐨 make a PUT request to the `listItemIdUrl` with some updates
-  // 💰 const updates = {notes: generate.notes()}
-  // 🐨 assert that this returns the right stuff (should be the same as the READ except with the updated notes)
+  const updates = {notes: generate.notes()}
+  const uData: AxiosResponseWrapper<ListItem> = await authAPI.put(
+    listItemIdUrl,
+    updates,
+  )
+  expect(uData.listItem).toEqual({...rData.listItem, ...updates})
 
   // DELETE
   // 🐨 make a DELETE request to the `listItemIdUrl`
   // 🐨 assert that this returns the right stuff (💰 {success: true})
+  const dData: AxiosResponseWrapper<ListItem> = await authAPI.delete(
+    listItemIdUrl,
+  )
+  expect(dData).toEqual({success: true})
+  const error: AxiosResponseWrapper<ListItem> = await authAPI
+    .get(listItemIdUrl)
+    .catch(resolve)
+  expect(error.status).toBe(404)
 
-  // 🐨 try to make a GET request to the `listItemIdUrl` again.
-  // 💰 this promise should reject. You can do a try/catch if you want, or you
-  // can use the `resolve` utility from utils/async:
-  // 💰 const error = await authAPI.get(listItemIdUrl).catch(resolve)
-  // 🐨 assert that the status is 404 and the error.data is correct
+  // snapshots will always fail. replace id with LIST_ITEM_ID
+  const sanitizedMessage = error.data.message.replace(
+    listItemId,
+    'LIST_ITEM_ID',
+  )
+  expect(sanitizedMessage).toMatchInlineSnapshot(
+    `"No list item was found with the id of LIST_ITEM_ID"`,
+  )
 })
 
 /* eslint no-unused-vars:0 */

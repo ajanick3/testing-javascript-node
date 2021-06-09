@@ -28,6 +28,12 @@ export type ListItem = {
   startDate: Date | number
 }
 
+export type AxiosResponseWrapper<T> = {
+  [key: string]: T & {
+    message: string
+  }
+}
+
 export interface Req extends Request {
   user?: User
   listItem?: ListItem
