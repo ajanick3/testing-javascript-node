@@ -55,9 +55,4 @@ test('auth flow', async () => {
     },
   })
   expect(meResponse.data.user).toEqual(loginResponse.data.user)
-
-  //
-  // 🐨 assert that the result you get back is correct
-  // 💰 (again, this should be the same data you get back in the other requests,
-  // so you can compare it with that).
 })
